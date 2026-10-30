@@ -28,7 +28,9 @@ summary{cursor:pointer;padding:12px 0;display:flex;gap:8px;align-items:center}su
 .img img{max-width:240px;max-height:140px;border-radius:8px;display:block;margin:6px 0}
 table{width:100%;border-collapse:collapse;font-size:.88rem}td,th{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
 .note{border-left:3px solid var(--pu);background:var(--bg2);padding:12px 14px;border-radius:0 10px 10px 0;color:var(--mut);margin:12px 0;font-size:.9rem}
-#login{min-height:100vh;display:grid;place-items:center;padding:20px}#lf{width:min(380px,100%);background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:28px}
+#login{min-height:100vh;display:grid;place-items:center;padding:20px}
+#login[hidden],#app[hidden]{display:none}
+#lf{width:min(380px,100%);background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:28px}
 #toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--line);padding:10px 18px;border-radius:12px;max-width:92vw;opacity:0;pointer-events:none;transition:opacity .25s}
 #toast.on{opacity:1}#toast.er{border-color:var(--er);color:var(--er)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
