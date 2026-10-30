@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arlow | Video Editor, Thumbnail Designer & Creator</title>
+<meta name="description" content="Arlow: football, Minecraft and cinematic video edits, thumbnails and the Auralis SMP.">
+<meta name="theme-color" content="#0c0c10">
+<style>
+:root{--bg:#0c0c10;--bg2:#15151b;--bg3:#1d1d26;--line:#2a2a36;--tx:#f4f4f8;--mut:#a8a8b8;--pu:#8b5cf6;--bl:#4f7cff;--r:14px;
+--disp:"Bahnschrift","Arial Narrow","Helvetica Neue",Arial,sans-serif;--body:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{background:var(--bg);color:var(--tx);font:16px/1.65 var(--body);overflow-x:hidden}
+a{color:inherit}img{max-width:100%;display:block}
+:focus-visible{outline:2px solid var(--bl);outline-offset:3px;border-radius:6px}
+.wrap{width:min(1120px,92%);margin-inline:auto}
+section{padding:96px 0;position:relative}
+h1,h2,h3{font-family:var(--disp);line-height:1.05;letter-spacing:-.01em}
+h2{font-size:clamp(2rem,5vw,3.2rem);margin-bottom:12px}
+.lead{color:var(--mut);max-width:60ch;margin-bottom:40px}
+.btn{display:inline-block;padding:13px 26px;border-radius:999px;border:1px solid var(--line);background:var(--bg2);color:var(--tx);font:600 .95rem var(--body);text-decoration:none;cursor:pointer;transition:transform .2s,box-shadow .25s,border-color .25s}
+.btn:hover{transform:translateY(-2px);border-color:var(--pu);box-shadow:0 8px 30px -8px rgba(139,92,246,.55)}
+.btn.pri{background:linear-gradient(120deg,var(--pu),var(--bl));border-color:transparent}
+.btn.sm{padding:9px 18px;font-size:.85rem}
+.tag{display:inline-block;font-size:.78rem;padding:3px 10px;border-radius:999px;background:var(--bg3);color:var(--mut);border:1px solid var(--line)}
+.tag.ph{color:#f0c36d;border-color:#5a4a1e;background:#241e0f}
+.tag.ok{color:#7ee2a8;border-color:#1f5a3a;background:#0f2418}
+/* nav */
+header{position:fixed;inset:0 0 auto;z-index:50;background:rgba(12,12,16,.78);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font:800 1.4rem var(--disp);letter-spacing:.12em;text-decoration:none}
+nav ul{display:flex;gap:26px;list-style:none;padding:0}
+nav ul a{text-decoration:none;color:var(--mut);font-size:.92rem;transition:color .2s}
+nav ul a:hover{color:var(--tx)}
+#menu{display:none;background:none;border:1px solid var(--line);color:var(--tx);border-radius:10px;padding:8px 12px;cursor:pointer}
+/* hero */
+#home{min-height:100vh;display:flex;align-items:center;padding-top:120px;overflow:hidden}
+.bg{position:absolute;inset:0;z-index:-1;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.35;animation:drift 18s ease-in-out infinite alternate}
+.o1{width:520px;height:520px;background:var(--pu);top:-120px;left:-100px}
+.o2{width:480px;height:480px;background:var(--bl);bottom:-160px;right:-80px;animation-delay:-8s}
+.bg::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 55%,var(--bg)),radial-gradient(circle at var(--mx,50%) var(--my,30%),rgba(139,92,246,.16),transparent 38%)}
+@keyframes drift{to{transform:translate(70px,50px) scale(1.12)}}
+.hero-grid{display:grid;gap:56px;grid-template-columns:1.05fr 1fr;align-items:center}
+.wordmark{font-size:clamp(4.5rem,15vw,10rem);font-weight:800;letter-spacing:.04em;line-height:.9;background:linear-gradient(180deg,#fff 40%,#8f8fa6);-webkit-background-clip:text;background-clip:text;color:transparent;animation:rise 1s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(26px);filter:blur(8px)}}
+.hero p{color:var(--mut);margin:22px 0 30px;max-width:46ch;font-size:1.1rem}
+.ctas{display:flex;gap:14px;flex-wrap:wrap}
+.feature{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:14px;box-shadow:0 30px 80px -30px rgba(79,124,255,.35)}
+.feature h3{font-size:1.15rem;margin:14px 4px 2px}
+.feature small{color:var(--mut);margin:0 4px 6px;display:block}
+/* media */
+.media{position:relative;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:linear-gradient(135deg,#1b1b26,#101016);display:grid;place-items:center}
+.media iframe,.media img{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:cover}
+.media .ph-txt{color:var(--mut);font-size:.88rem;text-align:center;padding:14px}
+.play{position:absolute;inset:0;border:0;background:none;cursor:pointer;display:grid;place-items:center}
+.play span{width:62px;height:62px;border-radius:50%;background:rgba(12,12,16,.7);border:1px solid #fff5;display:grid;place-items:center;transition:transform .25s,box-shadow .25s}
+.play:hover span{transform:scale(1.1);box-shadow:0 0 34px rgba(139,92,246,.7)}
+.play span::after{content:"";border-left:16px solid #fff;border-block:10px solid transparent;margin-left:5px}
+/* filters + grids */
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
+.filters button{background:var(--bg2);color:var(--mut);border:1px solid var(--line);padding:8px 18px;border-radius:999px;cursor:pointer;font:500 .9rem var(--body);transition:.2s}
+.filters button:hover{color:var(--tx)}
+.filters button[aria-pressed=true]{color:#fff;border-color:var(--pu);background:rgba(139,92,246,.2)}
+.grid{display:grid;gap:22px;grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:12px;transition:transform .3s,border-color .3s,box-shadow .3s}
+.card:hover{transform:translateY(-4px);border-color:#4a3f78;box-shadow:0 18px 50px -24px rgba(139,92,246,.6)}
+.card .info{padding:14px 6px 6px;display:flex;flex-direction:column;gap:8px}
+.card h3{font-size:1.2rem}
+.card .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.card p{color:var(--mut);font-size:.93rem}
+.empty{color:var(--mut);padding:30px;border:1px dashed var(--line);border-radius:var(--r)}
+.thumbs{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.thumb{padding:0;border:1px solid var(--line);background:var(--bg2);border-radius:12px;overflow:hidden;cursor:zoom-in;color:var(--tx);text-align:left;transition:transform .3s,border-color .3s}
+.thumb:hover{transform:scale(1.02);border-color:var(--pu)}
+.thumb .media{border-radius:0}
+.thumb span{display:block;padding:10px 14px;font-size:.9rem;color:var(--mut)}
+dialog{border:1px solid var(--line);border-radius:var(--r);background:var(--bg2);color:var(--tx);padding:14px;width:min(1000px,94vw);max-height:92vh}
+dialog::backdrop{background:rgba(0,0,0,.82);backdrop-filter:blur(4px)}
+dialog img{width:100%;max-height:74vh;object-fit:contain}
+dialog .bar{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:10px}
+/* stats */
+.stat{font:700 1.7rem var(--disp);margin-top:4px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0}
+.stats div{background:var(--bg3);border-radius:10px;padding:10px 12px;font-size:.8rem;color:var(--mut)}
+.note{margin-top:22px;padding:16px 18px;border-left:3px solid var(--pu);background:var(--bg2);color:var(--mut);font-size:.92rem;border-radius:0 10px 10px 0}
+/* services */
+.price{font:700 1.3rem var(--disp)}
+.card ul{padding-left:18px;color:var(--mut);font-size:.92rem}
+/* auralis */
+#auralis{background:radial-gradient(ellipse at 50% 0,#1d1536,transparent 60%),linear-gradient(var(--bg),#08080b 50%,var(--bg));border-block:1px solid var(--line)}
+#auralis h2{font-size:clamp(2.6rem,8vw,5.6rem);letter-spacing:.06em;font-weight:800}
+.sub{margin:44px 0 16px;font-size:1.5rem}
+.two{display:grid;gap:22px;grid-template-columns:1.2fr 1fr}
+.panel{background:rgba(21,21,27,.8);border:1px solid var(--line);border-radius:var(--r);padding:24px}
+.panel p{color:var(--mut);margin-top:8px}
+/* contact */
+.contact{display:grid;gap:28px;grid-template-columns:1fr 1.4fr;align-items:start}
+form{display:grid;gap:16px}
+label{font-size:.9rem;font-weight:600;display:grid;gap:6px}
+input,select,textarea{width:100%;background:var(--bg2);color:var(--tx);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font:inherit}
+input:focus,select:focus,textarea:focus{border-color:var(--pu);outline:none;box-shadow:0 0 0 3px rgba(139,92,246,.25)}
+textarea{min-height:140px;resize:vertical}
+#fmsg{min-height:1.5em;font-size:.92rem}
+footer{border-top:1px solid var(--line);padding:44px 0;color:var(--mut);font-size:.9rem}
+.foot{display:flex;flex-wrap:wrap;gap:28px;justify-content:space-between}
+footer ul{list-style:none;padding:0;display:flex;gap:18px;flex-wrap:wrap}
+footer a{text-decoration:none}footer a:hover{color:var(--tx)}
+.sr{position:absolute;left:-999px}
+@media(max-width:860px){
+ .hero-grid,.two,.contact{grid-template-columns:1fr}
+ #menu{display:block}
+ nav ul{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;background:var(--bg);border-bottom:1px solid var(--line);padding:18px 4%;gap:16px}
+ nav ul.open{display:flex}
+ section{padding:72px 0}
+}
+/* ---- UPGRADE: motion layer ---- */
+#prog{position:fixed;top:0;left:0;right:0;height:3px;z-index:60;background:linear-gradient(90deg,var(--pu),var(--bl));transform:scaleX(0);transform-origin:0 50%;box-shadow:0 0 12px var(--pu)}
+header{transition:background .3s,box-shadow .3s}nav{transition:height .3s}
+header.sc{background:rgba(10,10,14,.92);box-shadow:0 12px 40px -22px #000}header.sc nav{height:54px}
+nav ul a{position:relative;padding:4px 0}
+nav ul a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:linear-gradient(90deg,var(--pu),var(--bl));transform:scaleX(0);transform-origin:left;transition:transform .3s}
+nav ul a:hover::after,nav ul a.act::after{transform:scaleX(1)}nav ul a.act{color:var(--tx)}
+.wordmark{animation:none}
+.split .ch{display:inline-block;opacity:0;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.wordmark .ch{background:linear-gradient(180deg,#fff 40%,#8f8fa6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.wordmark .ch:hover{transform:translateY(-8px)}
+.split.in .ch{animation:chr .9s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i)*80ms)}
+@keyframes chr{from{opacity:0;transform:translateY(55%) rotateX(-70deg);filter:blur(10px)}to{opacity:1}}
+.hero p{animation:rvup .8s .7s both}.hero .ctas{animation:rvup .8s .9s both}.hero .feature{animation:rvr 1s .6s cubic-bezier(.2,.8,.2,1) both}
+.pc{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.scrollind{position:absolute;bottom:26px;left:50%;translate:-50% 0;width:26px;height:42px;border:2px solid #fff6;border-radius:14px;transition:opacity .4s,border-color .2s}
+.scrollind:hover{border-color:var(--pu)}
+.scrollind span{position:absolute;left:50%;top:8px;width:4px;height:8px;margin-left:-2px;border-radius:2px;background:#fff;animation:wheel 1.8s ease-in-out infinite}
+@keyframes wheel{0%{opacity:0;transform:translateY(0)}30%{opacity:1}100%{opacity:0;transform:translateY(14px)}}
+/* reveal variants */
+.rv{opacity:0}.rv.in{opacity:1;animation:var(--an) .8s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:var(--d,0ms)}
+.up{--an:rvup}.lf{--an:rvl}.rt{--an:rvr}.zm{--an:rvz}.rot{--an:rvrot}.clip{--an:rvclip}
+@keyframes rvup{from{opacity:0;transform:translateY(34px)}}
+@keyframes rvl{from{opacity:0;transform:translateX(-48px)}}
+@keyframes rvr{from{opacity:0;transform:translateX(48px)}}
+@keyframes rvz{from{opacity:0;transform:scale(.92);filter:blur(6px)}}
+@keyframes rvrot{from{opacity:0;transform:perspective(700px) rotateY(16deg) translateX(30px)}}
+@keyframes rvclip{from{clip-path:inset(0 100% 0 0);opacity:.2}}
+/* buttons */
+.btn{position:relative;overflow:hidden;transform:translate(var(--tx,0px),var(--ty,0px));transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .25s,border-color .25s}
+.btn:hover{transform:translate(var(--tx,0px),calc(var(--ty,0px) - 2px));border-color:var(--bl)}
+.btn.pri:hover{box-shadow:0 0 0 1px #fff3,0 10px 36px -6px rgba(139,92,246,.85)}
+.btn:active{transform:translate(var(--tx,0px),var(--ty,0px)) scale(.96)}
+.btn::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);transform:translateX(-120%);transition:transform .6s}
+.btn:hover::before{transform:translateX(120%)}
+.btn[disabled]{opacity:.6;pointer-events:none}
+.play span{position:relative}
+.play span::before{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px solid #fff6;animation:ring 2.2s ease-out infinite}
+@keyframes ring{to{transform:scale(1.5);opacity:0}}
+/* cards */
+@property --a{syntax:"<angle>";inherits:false;initial-value:0deg}
+.card{position:relative;background:radial-gradient(240px circle at var(--gx,50%) var(--gy,-100%),rgba(139,92,246,.14),transparent 70%),var(--bg2)}
+.card.tilting{transition:transform .1s linear,border-color .3s,box-shadow .3s}
+.card::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;pointer-events:none;opacity:0;transition:opacity .3s;background:conic-gradient(from var(--a),transparent 60%,var(--pu),var(--bl),transparent);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.card:hover::before{opacity:1;animation:spin 4s linear infinite}@keyframes spin{to{--a:360deg}}
+.card .media img{transition:transform .7s cubic-bezier(.2,.8,.2,1)}.card:hover .media img{transform:scale(1.08)}
+.ov{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;gap:6px;padding:16px;background:linear-gradient(transparent 30%,rgba(8,8,12,.92));opacity:0;transition:opacity .3s;pointer-events:none}
+.ov>*{transform:translateY(10px);transition:transform .35s}.card:hover .ov,.card:focus-within .ov{opacity:1}.card:hover .ov>*,.card:focus-within .ov>*{transform:none}
+.ov b{font:700 1.1rem var(--disp)}.ov .vb{padding:6px 14px;border-radius:999px;background:linear-gradient(120deg,var(--pu),var(--bl));font-size:.8rem;font-weight:600}
+.play-link{position:absolute;inset:0;z-index:2}
+.pin{animation:pin .55s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i)*70ms)}
+@keyframes pin{from{opacity:0;transform:translateY(22px) scale(.95)}}
+.out{opacity:0;transform:scale(.95);transition:opacity .18s,transform .18s}
+.card li{transition:transform .25s,color .25s}.card:hover li{transform:translateX(4px);color:var(--tx)}
+#service-grid .price{transition:letter-spacing .3s,filter .3s}#service-grid .card:hover .price{letter-spacing:.03em;filter:drop-shadow(0 0 12px rgba(139,92,246,.7))}
+input:hover,select:hover,textarea:hover{border-color:#4a4a63}label{transition:color .2s}label:focus-within{color:#fff}
+dialog[open]{animation:rvz .35s}.swap{animation:lbin .35s}@keyframes lbin{from{opacity:0;transform:scale(.97)}}
+/* stats */
+.ph-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.kpis{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.kpi{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:6px;align-items:flex-start;color:var(--mut);transition:transform .3s,border-color .3s}
+.kpi:hover{transform:translateY(-3px);border-color:#4a3f78}.kpi .n{font:800 2.4rem var(--disp);color:var(--tx);font-variant-numeric:tabular-nums}
+#chart{width:100%;height:auto;margin-top:12px}
+.line{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 2s cubic-bezier(.4,0,.2,1)}.go .line{stroke-dashoffset:0}
+.area{opacity:0;transition:opacity 1s 1s}.go .area{opacity:1}
+.dot{fill:#fff;opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(0);transition:opacity .4s var(--d),transform .4s var(--d)}.go .dot{opacity:1;transform:scale(1)}
+.goal{color:var(--mut);font-size:.9rem;margin-top:16px}
+.bar{height:8px;background:var(--bg3);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.bar i{display:block;height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--pu),var(--bl));transition:width 1.5s cubic-bezier(.2,.8,.2,1)}.go .bar i{width:var(--w)}
+/* auralis atmosphere */
+#auralis>.wrap{position:relative;z-index:1}
+.alayers{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.fog{position:absolute;width:140%;height:60%;left:-20%;filter:blur(60px);opacity:.55;animation:fogm 24s ease-in-out infinite alternate}
+.f1{top:5%;background:radial-gradient(ellipse,rgba(110,70,220,.38),transparent 65%)}
+.f2{bottom:0;background:radial-gradient(ellipse,rgba(60,100,255,.3),transparent 65%);animation-delay:-10s}
+@keyframes fogm{to{transform:translateX(8%) scale(1.1)}}
+#trailer{box-shadow:0 0 0 1px #3a2f66,0 0 70px -12px rgba(139,92,246,.6);animation:glowp 5s ease-in-out infinite alternate}
+@keyframes glowp{to{box-shadow:0 0 0 1px #5a45a0,0 0 100px -8px rgba(79,124,255,.6)}}
+/* ---- THE JOURNEY ---- */
+#journey{background:linear-gradient(var(--bg),#0a0a0f 45%,var(--bg))}
+.stage{margin:0 0 56px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:#0a0a10;box-shadow:0 30px 90px -40px rgba(139,92,246,.55)}
+.stage canvas{display:block;width:100%}
+.stagebar{display:flex;align-items:center;gap:14px;padding:10px 16px;border-top:1px solid var(--line);min-height:54px}
+.jdots{display:flex;gap:8px}.jd{width:10px;height:10px;border-radius:50%;background:var(--bg3);border:1px solid var(--line);transition:background .4s,box-shadow .4s,border-color .4s}
+.jd.f{background:#6b3a48;border-color:#b45a6e}.jd.w{background:#fff;border-color:#fff;box-shadow:0 0 14px 2px rgba(139,92,246,.9)}
+#jcap{flex:1;color:var(--mut);font-size:.92rem}
+.jlist{position:relative;display:grid;gap:18px;padding-left:34px;margin-bottom:56px}
+.jlist::before{content:"";position:absolute;left:9px;top:8px;bottom:8px;width:2px;background:linear-gradient(var(--pu),var(--bl));opacity:.5}
+.jitem::after{content:"";position:absolute;left:-31px;top:26px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--pu)}
+.jitem.hl{border-color:#5a45a0;box-shadow:0 0 60px -20px rgba(139,92,246,.7)}.jitem.hl::after{background:var(--pu);box-shadow:0 0 14px var(--pu)}
+.jclose{max-width:720px}.jclose p{font-size:1.1rem;margin:0 0 16px}.jclose p:last-child{font-family:var(--disp);font-size:1.5rem;line-height:1.25}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.rv,.split .ch{opacity:1!important}.line{stroke-dashoffset:0}.area,.dot{opacity:1;transform:none}.bar i{width:var(--w)}}
+</style>
+</head>
+<body>
+<a class="sr" href="#main">Skip to content</a>
+<div id="prog" aria-hidden="true"></div>
+<header><div class="wrap"><nav aria-label="Main">
+ <a class="logo" href="#home">ARLOW</a>
+ <button id="menu" aria-expanded="false" aria-controls="links">Menu</button>
+ <ul id="links">
+  <li><a href="#portfolio">Editing</a></li><li><a href="#thumbnails">Thumbnails</a></li>
+  <li><a href="#socials">Socials</a></li><li><a href="#services">Services</a></li>
+  <li><a href="#journey">Journey</a></li><li><a href="#auralis">Auralis SMP</a></li><li><a href="#contact">Contact</a></li>
+ </ul></nav></div></header>
+
+<main id="main">
+<!-- HOME -->
+<section id="home" class="hero"><div class="bg" aria-hidden="true"><div class="orb o1"></div><div class="orb o2"></div></div>
+<div class="wrap hero-grid">
+ <div>
+  <h1 class="wordmark">ARLOW</h1>
+  <!-- EDIT: replace this intro with your own words -->
+  <p>Video editor, thumbnail designer and Minecraft SMP creator. Football edits, cinematic cuts and designs built to hold attention.</p>
+  <div class="ctas"><a class="btn pri" href="#portfolio">View My Work</a><a class="btn" href="#contact">Hire Me</a></div>
+ </div>
+ <div class="feature" aria-label="Featured edit"><div class="media" id="featuredMedia"></div>
+  <h3 id="featuredTitle"></h3><small id="featuredNote"></small></div>
+</div>
+<a class="scrollind" href="#portfolio" aria-label="Scroll to my work"><span></span></a></section>
+
+<!-- EDITING PORTFOLIO -->
+<section id="portfolio"><div class="wrap">
+ <h2>Editing portfolio</h2>
+ <p class="lead">Football, Minecraft, cinematic and more. Filter by category, watch here or open the original video.</p>
+ <div class="filters" id="filters" role="group" aria-label="Filter projects"></div>
+ <div class="grid" id="projects"></div>
+</div></section>
+
+<!-- THUMBNAILS -->
+<section id="thumbnails" style="background:var(--bg2)"><div class="wrap">
+ <h2>Thumbnails &amp; design</h2>
+ <p class="lead">YouTube thumbnails, graphics and other designs. Click any image to preview it larger.</p>
+ <div class="grid thumbs" id="thumbs"></div>
+</div></section>
+
+<!-- SOCIALS -->
+<section id="socials"><div class="wrap">
+ <h2>Socials &amp; statistics</h2>
+ <p class="lead">Find me across platforms. Labels show whether a number is a placeholder, typed in by hand, or loaded live.</p>
+ <div class="grid" id="social-grid"></div>
+ <div id="statsblock" style="margin-top:56px">
+  <h3 class="sub" style="margin-top:0">Performance overview</h3>
+  <div class="kpis" id="kpis"></div>
+  <div class="two" style="margin-top:22px">
+   <div class="panel"><div class="ph-row"><h3>View growth</h3><span class="tag" id="chartTag"></span></div><svg id="chart" viewBox="0 0 600 220" role="img" aria-label="Line chart of views over time"></svg></div>
+   <div class="panel" id="goals"></div>
+  </div>
+ </div>
+ <div class="note"><strong>Live statistics:</strong> none are fabricated. Add numbers by hand in the SOCIALS array, or set <code>STATS_ENDPOINT</code> in the script to your own free Cloudflare Worker that calls the official YouTube Data API. Keep the API key in the Worker's secrets, never in this file.</div>
+</div></section>
+
+<!-- SERVICES -->
+<section id="services" style="background:var(--bg2)"><div class="wrap">
+ <h2>Services</h2>
+ <p class="lead">What I can make for you. Pricing is set per project until you add your own rates.</p>
+ <div class="grid" id="service-grid"></div>
+ <div class="note" id="acceptNote" hidden></div>
+</div></section>
+
+<!-- THE JOURNEY -->
+<section id="journey"><div class="wrap">
+ <h2>The Journey</h2>
+ <p class="lead" id="jlead"></p>
+ <figure class="stage" id="stage">
+  <canvas id="jc" role="img" aria-label="Animation: a stickman sets a goal high above him, fails four times, gets back up each time and finally reaches it."></canvas>
+  <div class="stagebar"><div class="jdots" id="jdots" aria-hidden="true"></div><span id="jcap" aria-live="polite"></span><button class="btn sm" id="jreplay" type="button" hidden>Replay</button></div>
+ </figure>
+ <div class="jlist" id="jlist"></div>
+ <div class="jclose" id="jclose"></div>
+</div></section>
+
+<!-- AURALIS SMP -->
+<section id="auralis"><div class="wrap">
+ <h2>Auralis SMP</h2>
+ <!-- EDIT: your pitch for the SMP -->
+ <p class="lead">A scripted Minecraft SMP. Placeholder: describe the premise, tone and release plan here.</p>
+ <div class="two">
+  <div class="panel"><div class="media" id="trailer"></div><h3 style="margin-top:14px">Trailer</h3></div>
+  <div class="panel"><h3>Lore</h3><p id="lore"></p>
+   <h3 style="margin-top:22px">Recruitment</h3><p id="recruit"></p>
+   <div class="ctas" style="margin-top:20px"><a class="btn pri" id="discordInvite" href="#contact">Join the Discord</a><button class="btn" type="button" id="watchTrailer">Watch trailer</button><button class="btn" type="button" id="applyBtn">Apply to join</button></div></div>
+ </div>
+ <h3 class="sub">Episodes</h3><div class="grid" id="episodes"></div>
+ <h3 class="sub">Behind the scenes</h3><div class="grid" id="bts"></div>
+ <div id="newsWrap" hidden><h3 class="sub">News</h3><div class="grid" id="news"></div></div>
+</div></section>
+
+<!-- CONTACT -->
+<section id="contact"><div class="wrap">
+ <h2>Contact</h2>
+ <p class="lead">Tell me about your project. Discord is usually fastest.</p>
+ <div class="contact">
+  <div class="panel"><h3>Message on Discord</h3>
+   <p>Add your Discord username or invite link in the CONFIG block.</p>
+   <div class="ctas" style="margin-top:18px"><a class="btn pri" id="discordBtn" href="#">Contact on Discord</a></div></div>
+  <form id="form" novalidate>
+   <label>Name<input name="name" required autocomplete="name"></label>
+   <label>Email or Discord username<input name="contact" required></label>
+   <label>Service requested<select name="service" id="serviceSel" required></select></label>
+   <label>Budget (optional)<input name="budget" placeholder="e.g. your currency and amount"></label>
+   <label>Project details<textarea name="details" required></textarea></label>
+   <input name="_gotcha" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true">
+   <button class="btn pri" type="submit">Send request</button>
+   <p id="fmsg" role="status"></p>
+  </form>
+ </div>
+ <div class="note">
+  <strong>Connecting the form (free, no secrets in this file):</strong>
+  1) Create a free form on <em>Formspree</em>, <em>Web3Forms</em> or <em>Getform</em>. 2) Copy the public form URL they give you (Formspree: <code>https://formspree.io/f/xxxx</code>). Web3Forms uses a public access key that is designed to sit in front-end code. 3) Paste it into <code>FORM_ENDPOINT</code> in the script. Never paste passwords, private API keys or tokens into this file. Until then the form validates but sends nothing.
+ </div>
+</div></section>
+</main>
+
+<footer><div class="wrap foot">
+ <div><strong class="logo">ARLOW</strong><p style="margin-top:6px">Editing, design and the Auralis SMP.</p></div>
+ <nav aria-label="Footer"><ul><li><a href="#portfolio">Editing</a></li><li><a href="#thumbnails">Thumbnails</a></li><li><a href="#services">Services</a></li><li><a href="#journey">Journey</a></li><li><a href="#auralis">Auralis SMP</a></li><li><a href="#contact">Contact</a></li></ul></nav>
+ <ul id="footSocials" aria-label="Social links"></ul>
+ <p style="width:100%">&copy; <span id="yr"></span> Arlow. All rights reserved.</p>
+</div></footer>
+
+<dialog id="lightbox" aria-label="Image preview"><img id="lbImg" alt="">
+ <div class="bar"><span id="lbCap"></span><span style="display:flex;gap:8px"><button class="btn sm" id="lbPrev" aria-label="Previous image">Prev</button><button class="btn sm" id="lbNext" aria-label="Next image">Next</button><button class="btn sm" id="lbClose">Close</button></span></div></dialog>
+
+<script>
+/* =====================================================================
+   CONFIG: everything you need to edit is in this block.
+   Leave a value as "" and the site shows a clear placeholder instead.
+   ===================================================================== */
+const CONFIG = {
+  discordInvite: "",      // EDIT: e.g. "https://discord.gg/yourInvite" (used for Discord buttons)
+  auralisDiscord: "",     // EDIT: Auralis SMP Discord invite (falls back to discordInvite)
+  recruitUrl: "",         // EDIT (optional): link to your Auralis application form; empty = opens the contact form
+  FORM_ENDPOINT: "",      // EDIT: public URL from Formspree/Web3Forms/Getform (see Contact section)
+  STATS_ENDPOINT: ""      // OPTIONAL: your own backend/Worker returning JSON, see loadLiveStats()
+};
+
+/* Featured edit on the home page.
+   youtubeId = the part after v= in a YouTube link (youtube.com/watch?v=THIS_PART) */
+const FEATURED = { title: "Featured edit (placeholder)", note: "Replace with your best edit.", youtubeId: "" };
+
+/* PROJECTS: add a new project by copying one line.
+   category: any text; filter buttons are created automatically.
+   youtubeId: embeds the video (loads only when clicked, so the page stays fast).
+   thumb: optional image path/URL used before play.   url: link to the original video. */
+const PROJECTS = [
+  { title: "Football edit (placeholder)",   category: "Football",  youtubeId: "", thumb: "", url: "", desc: "Describe this project." },
+  { title: "Minecraft edit (placeholder)",  category: "Minecraft", youtubeId: "", thumb: "", url: "", desc: "Describe this project." },
+  { title: "Cinematic edit (placeholder)",  category: "Cinematic", youtubeId: "", thumb: "", url: "", desc: "Describe this project." },
+  { title: "Other project (placeholder)",   category: "Other",     youtubeId: "", thumb: "", url: "", desc: "Describe this project." }
+];
+
+/* THUMBNAILS: src = image file in the same folder (e.g. "images/thumb1.jpg") or a full URL. */
+const THUMBNAILS = [
+  { title: "YouTube thumbnail 1 (placeholder)", src: "" },
+  { title: "YouTube thumbnail 2 (placeholder)", src: "" },
+  { title: "Graphic design 1 (placeholder)",    src: "" },
+  { title: "Graphic design 2 (placeholder)",    src: "" },
+  { title: "Banner / logo (placeholder)",       src: "" },
+  { title: "Other design (placeholder)",        src: "" }
+];
+
+/* SOCIALS: followers/views are strings you type yourself, or "" if unknown.
+   statSource: "placeholder" | "manual" (you typed real numbers) | "live" (set automatically by loadLiveStats).
+   youtubeChannelId is only used by your own backend; it is not a secret. */
+const SOCIALS = [
+  { platform: "YouTube", username: "@your-handle", url: "", followers: "", views: "", videos: "", statSource: "placeholder", youtubeChannelId: "" },
+  { platform: "TikTok",  username: "@your-handle", url: "", followers: "", views: "", videos: "", statSource: "placeholder" },
+  { platform: "Instagram", username: "@your-handle", url: "", followers: "", views: "", videos: "", statSource: "placeholder" },
+  { platform: "Discord", username: "your-server or username", url: "", followers: "", views: "", videos: "", statSource: "placeholder" }
+];
+
+/* SERVICES: price is free text, e.g. "From £25". Leave "" to show "Set your price". */
+const SERVICES = [
+  { name: "Video editing", desc: "Describe your editing service.", price: "", features: ["Example deliverable 1", "Example deliverable 2"], example: "#portfolio" },
+  { name: "Thumbnail design", desc: "Describe your thumbnail service.", price: "", features: ["Example deliverable 1", "Example deliverable 2"], example: "#thumbnails" },
+  { name: "Other creative work", desc: "Describe other services (graphics, channel art, etc.).", price: "", features: ["Example deliverable 1"], example: "#thumbnails" }
+];
+
+/* AURALIS SMP content */
+const AURALIS = {
+  trailerYoutubeId: "",   // EDIT: trailer video id
+  lore: "Placeholder: write the world's backstory here.",
+  recruitment: "Placeholder: say whether applications are open, what roles you need and how to apply.",
+  episodes: [ { title: "Episode 1 (placeholder)", youtubeId: "", url: "" }, { title: "Episode 2 (placeholder)", youtubeId: "", url: "" } ],
+  bts: [ { title: "Behind the scenes 1 (placeholder)", youtubeId: "", url: "" }, { title: "Behind the scenes 2 (placeholder)", youtubeId: "", url: "" } ]
+};
+
+/* =====================================================================
+   THE JOURNEY: edit the words and list here. To add something, copy a line.
+   outcome = the small label on the card (e.g. "Didn't work out", "Tried", "Building now").
+   highlight:true gives a card the purple glow. link/linkText add an optional button.
+   ===================================================================== */
+const JOURNEY_COPY = {
+  lead: "I've started a lot of things. A lot of them didn't work out. This is the honest version.",
+  closing: [
+    "Dropshipping, football memes, editing channels, edits for clients, and a pile of smaller things in between. Some of it went nowhere. I'm still here, and I'm still building.",
+    "I don't think strength is never failing. I think it's getting back up after you do, changing the approach and going again. I'll keep doing that for as long as it takes.",
+    "If you've believed in me, backed me or just stuck around: I won't waste that. I want your belief to look like a good decision, and I'm going to work to make it one."
+  ]
+};
+const JOURNEY = [
+  { name: "Dropshipping", outcome: "Didn't work out", text: "I tried building a dropshipping business. It didn't work out. I'd still rather have tried it than wondered." },
+  { name: "Amzfootball7", outcome: "Didn't work out", text: "Football meme channels on YouTube and TikTok. I gave it a proper go and it didn't turn into what I hoped." },
+  { name: "Vax", outcome: "Didn't work out", text: "Editing channels on YouTube and TikTok. Another attempt that didn't land, but the editing stayed with me." },
+  { name: "Editing for clients", outcome: "Tried", text: "Editing videos for other people. It's a big part of what I do now, and you can hire me.", link: "#contact", linkText: "Hire me" },
+  { name: "Smaller stuff", outcome: "Tried", text: "Plenty of smaller experiments that never got a name. Each one was another attempt." },
+  { name: "Auralis SMP", outcome: "Building now", highlight: true, text: "My next big project: a scripted Minecraft SMP I'm working towards right now. It hasn't failed. It's something I'm building, with everything the others taught me.", link: "#auralis", linkText: "See Auralis SMP" }
+];
+
+/* ===================== ADMIN DASHBOARD CONNECTION =====================
+   The site loads PUBLISHED content from /api/content (managed in /admin/).
+   If that fails or nothing is published, the arrays above are used as the fallback. */
+let REMOTE = null;
+const ytId = u => { const m = String(u || "").match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|shorts\/|live\/))([\w-]{11})/); return m ? m[1] : ""; };
+async function loadRemote() {
+  try {
+    const ac = new AbortController(), to = setTimeout(() => ac.abort(), 2500);
+    const r = await fetch("/api/content", { signal: ac.signal }); clearTimeout(to);
+    if (!r.ok) return;
+    const d = await r.json(); if (!d || !Array.isArray(d.projects)) return;
+    REMOTE = d; const put = (a, v) => a.splice(0, a.length, ...v), A = d.auralis || {};
+    put(PROJECTS, d.projects.map(p => ({ title: p.title, category: p.category || "Other", youtubeId: ytId(p.video), thumb: p.thumb || "", url: p.url || (ytId(p.video) ? "" : p.video || ""), desc: p.desc || "" })));
+    const f = d.projects.find(p => p.id === d.featuredId) || d.projects[0];
+    if (f) Object.assign(FEATURED, { title: f.title, note: f.desc || "", youtubeId: ytId(f.video), thumb: f.thumb || "" });
+    put(THUMBNAILS, (d.thumbnails || []).map(t => ({ title: t.title, desc: t.desc, src: t.src })));
+    put(SOCIALS, (d.socials || []).map(x => ({ platform: x.platform, username: x.username, url: x.url, followers: x.followers, views: x.views, videos: x.videos, icon: x.icon, statSource: (x.followers || x.views || x.videos) ? "manual" : "placeholder" })));
+    put(SERVICES, (d.services || []).map(x => ({ name: x.name, desc: x.desc, price: x.price, features: x.features || [], example: x.example || "#portfolio", status: x.status })));
+    Object.assign(AURALIS, { trailerYoutubeId: ytId(A.trailerUrl), lore: A.lore || AURALIS.lore, recruitment: ((A.recruitStatus ? A.recruitStatus + ". " : "") + (A.recruitment || "")) || AURALIS.recruitment,
+      episodes: (A.episodes || []).map(e => ({ title: e.title, desc: e.desc, thumb: e.thumb, youtubeId: ytId(e.video), url: e.url || (ytId(e.video) ? "" : e.video || "") })) });
+    if (d.config && d.config.discordInvite) CONFIG.discordInvite = d.config.discordInvite;
+    if (A.discordInvite) CONFIG.auralisDiscord = A.discordInvite;
+    if (A.recruitUrl) CONFIG.recruitUrl = A.recruitUrl;
+    const an = document.getElementById("acceptNote");
+    if (an && (d.accepting === false || d.availability)) { an.hidden = false; an.textContent = d.accepting === false ? (d.availability || "Commissions are currently closed.") : d.availability; }
+  } catch (e) { console.warn("Using built-in content.", e); }
+}
+/* lets the admin dashboard read the built-in arrays (same-origin only) for its one-click import */
+if (parent !== window && /arlow-export/.test(location.search)) parent.postMessage({ arlowDefaults: { PROJECTS, THUMBNAILS, SOCIALS, SERVICES, AURALIS, FEATURED, CONFIG } }, location.origin);
+(async function () { await loadRemote();
+/* ===================== Code below: no need to edit ===================== */
+const $ = s => document.querySelector(s);
+function h(tag, attrs = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) { if (k === "class") e.className = v; else if (k === "text") e.textContent = v; else e.setAttribute(k, v); }
+  kids.flat().forEach(c => c && e.append(c));
+  return e;
+}
+const safeUrl = u => /^(https?:\/\/|#|mailto:|images\/|\.\/)/i.test(u || "") ? u : "";
+
+/* Click-to-load YouTube embed (privacy-friendly domain, nothing loads until play) */
+function videoBox(item, label) {
+  const box = h("div", { class: "media" });
+  if (!item.youtubeId) { box.append(h("div", { class: "ph-txt", text: "Video placeholder: add a youtubeId" })); return box; }
+  if (item.thumb) box.append(h("img", { src: item.thumb, alt: "", loading: "lazy" }));
+  else box.append(h("img", { src: `https://i.ytimg.com/vi/${encodeURIComponent(item.youtubeId)}/hqdefault.jpg`, alt: "", loading: "lazy" }));
+  const b = h("button", { class: "play", "aria-label": "Play " + label }, h("span"));
+  b.onclick = () => {
+    box.replaceChildren(h("iframe", { src: `https://www.youtube-nocookie.com/embed/${encodeURIComponent(item.youtubeId)}?autoplay=1&rel=0`, title: label, allow: "autoplay; encrypted-media; picture-in-picture", allowfullscreen: "" }));
+  };
+  box.append(b);
+  return box;
+}
+const discordHref = () => safeUrl(CONFIG.discordInvite);
+
+/* Home featured */
+$("#featuredMedia").replaceWith(Object.assign(videoBox(FEATURED, FEATURED.title), { id: "featuredMedia" }));
+$("#featuredTitle").textContent = FEATURED.title; $("#featuredNote").textContent = FEATURED.note;
+
+/* Portfolio + filters (animated switching) */
+const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const cats = ["All", ...new Set(PROJECTS.map(p => p.category))];
+let active = "All", busy = false;
+function projectCard(p, i, anim) {
+  const link = safeUrl(p.url), m = videoBox(p, p.title);
+  if (!p.youtubeId && link) m.append(h("a", { class: "play-link", href: link, target: "_blank", rel: "noopener", "aria-label": "Open " + p.title }));
+  m.append(h("div", { class: "ov", "aria-hidden": "true" }, h("span", { class: "tag", text: p.category }), h("b", { text: p.title }), h("span", { class: "vb", text: p.youtubeId ? "Play" : link ? "Open video" : "Add a video" })));
+  const c = h("article", { class: "card" + (anim ? " pin" : "") }, m,
+    h("div", { class: "info" }, h("div", { class: "row" }, h("h3", { text: p.title }), h("span", { class: "tag", text: p.category })),
+      h("p", { text: p.desc }),
+      link ? h("a", { class: "btn sm", href: link, target: "_blank", rel: "noopener", text: "Watch original" }) : h("span", { class: "tag ph", text: "Original link: add url" })));
+  c.style.setProperty("--i", i); return c;
+}
+function renderProjects(anim) {
+  const list = PROJECTS.filter(p => active === "All" || p.category === active);
+  $("#projects").replaceChildren(...(list.length ? list.map((p, i) => projectCard(p, i, anim)) : [h("p", { class: "empty", text: "No projects in this category yet." })]));
+}
+$("#filters").replaceChildren(...cats.map(c => {
+  const b = h("button", { type: "button", "aria-pressed": String(c === active), text: c });
+  b.onclick = () => {
+    if (c === active || busy) return;
+    busy = true; active = c;
+    document.querySelectorAll("#filters button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    document.querySelectorAll("#projects .card").forEach(x => x.classList.add("out"));
+    setTimeout(() => { renderProjects(true); busy = false; }, RM ? 0 : 200);
+  };
+  return b;
+}));
+renderProjects(false);
+
+/* Thumbnails + lightbox (prev/next buttons, arrow keys, swipe) */
+const lb = $("#lightbox"); let li = 0;
+function showLb(i) {
+  li = (i + THUMBNAILS.length) % THUMBNAILS.length;
+  const t = THUMBNAILS[li], im = $("#lbImg");
+  im.classList.remove("swap"); void im.offsetWidth;
+  if (t.src) im.src = t.src; else im.removeAttribute("src");
+  im.alt = t.title; $("#lbCap").textContent = t.title + (t.desc ? ": " + t.desc : "") + (t.src ? "" : ": no image set yet") + " (" + (li + 1) + "/" + THUMBNAILS.length + ")";
+  im.classList.add("swap");
+}
+$("#thumbs").replaceChildren(...THUMBNAILS.map((t, i) => {
+  const m = h("div", { class: "media" });
+  if (t.src) m.append(h("img", { src: t.src, alt: t.title, loading: "lazy" })); else m.append(h("div", { class: "ph-txt", text: "Image placeholder: add src" }));
+  const b = h("button", { class: "thumb", type: "button", "aria-label": "Preview " + t.title }, m, h("span", { text: t.title }));
+  b.onclick = () => { showLb(i); lb.showModal(); };
+  return b;
+}));
+$("#lbClose").onclick = () => lb.close();
+$("#lbPrev").onclick = () => showLb(li - 1); $("#lbNext").onclick = () => showLb(li + 1);
+lb.addEventListener("click", e => { if (e.target === lb) lb.close(); });
+lb.addEventListener("keydown", e => { if (e.key === "ArrowLeft") showLb(li - 1); if (e.key === "ArrowRight") showLb(li + 1); });
+let sx = 0;
+lb.addEventListener("touchstart", e => { sx = e.touches[0].clientX; }, { passive: true });
+lb.addEventListener("touchend", e => { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) showLb(li + (dx < 0 ? 1 : -1)); });
+
+/* Socials */
+const label = { placeholder: ["Placeholder", "tag ph"], manual: ["Entered by hand", "tag"], live: ["Live data", "tag ok"] };
+function renderSocials() {
+  $("#social-grid").replaceChildren(...SOCIALS.map(s => {
+    const [lt, lc] = label[s.statSource] || label.placeholder;
+    const val = v => v || "Not set";
+    const link = safeUrl(s.url);
+    return h("article", { class: "card" }, h("div", { class: "info" },
+      h("div", { class: "row" }, h("div", { style: "display:flex;gap:10px;align-items:center" }, s.icon ? h("img", { src: s.icon, alt: "", width: "36", height: "36", style: "border-radius:50%;object-fit:cover" }) : null, h("h3", { text: s.platform })), h("span", { class: lc, text: lt })),
+      h("p", { text: s.username }),
+      h("div", { class: "stats" }, h("div", { text: "Followers" }, h("div", { class: "stat", text: val(s.followers) })), h("div", { text: "Total views" }, h("div", { class: "stat", text: val(s.views) }))),
+      s.videos !== undefined && s.platform === "YouTube" ? h("p", { text: "Videos: " + val(s.videos) }) : null,
+      link ? h("a", { class: "btn sm", href: link, target: "_blank", rel: "noopener", text: "Visit " + s.platform }) : h("span", { class: "tag ph", text: "Link: add url" })));
+  }));
+  $("#footSocials").replaceChildren(...SOCIALS.filter(s => safeUrl(s.url)).map(s => h("li", {}, h("a", { href: safeUrl(s.url), target: "_blank", rel: "noopener", text: s.platform }))));
+  if (!$("#footSocials").children.length) $("#footSocials").append(h("li", { text: "Social links appear here once you add URLs." }));
+}
+/* Live stats hook. Your backend must return JSON like:
+   { "YouTube": { "followers": "1.2K", "views": "45K", "videos": "30" } }
+   The API key lives ONLY in your backend (e.g. Cloudflare Worker secret). Never put it here. */
+async function loadLiveStats() {
+  if (!CONFIG.STATS_ENDPOINT) return;
+  try {
+    const r = await fetch(CONFIG.STATS_ENDPOINT, { headers: { Accept: "application/json" } });
+    if (!r.ok) throw new Error(r.status);
+    const data = await r.json();
+    SOCIALS.forEach(s => { const d = data[s.platform]; if (d) { Object.assign(s, d, { statSource: "live" }); } });
+    renderSocials(); renderStats();
+  } catch (e) { console.warn("Live stats unavailable; showing saved values.", e); }
+}
+renderSocials(); loadLiveStats();
+
+/* Services */
+$("#service-grid").replaceChildren(...SERVICES.map(s => h("article", { class: "card" }, h("div", { class: "info" },
+  h("div", { class: "row" }, h("h3", { text: s.name }), s.status ? h("span", { class: "tag" + (s.status === "Unavailable" ? " ph" : s.status === "Available" ? " ok" : ""), text: s.status }) : null), h("p", { text: s.desc }),
+  h("ul", {}, s.features.map(f => h("li", { text: f }))),
+  h("div", { class: "price", text: s.price || "Set your price" }),
+  h("div", { class: "ctas" }, h("a", { class: "btn pri sm", href: "#contact", "data-service": s.name, text: "Hire Me" }), h("a", { class: "btn sm", href: s.example, text: "See examples" }))))));
+$("#serviceSel").replaceChildren(h("option", { value: "", text: "Choose a service" }), ...SERVICES.map(s => h("option", { value: s.name, text: s.name })), h("option", { value: "Auralis SMP / other", text: "Auralis SMP / other" }));
+document.querySelectorAll("[data-service]").forEach(a => a.addEventListener("click", () => { $("#serviceSel").value = a.dataset.service; }));
+
+/* Auralis */
+$("#trailer").replaceWith(Object.assign(videoBox({ youtubeId: AURALIS.trailerYoutubeId }, "Auralis SMP trailer"), { id: "trailer" }));
+$("#lore").textContent = AURALIS.lore; $("#recruit").textContent = AURALIS.recruitment;
+const epCard = e => { const l = safeUrl(e.url); return h("article", { class: "card" }, videoBox(e, e.title), h("div", { class: "info" }, h("h3", { text: e.title }), e.desc ? h("p", { text: e.desc }) : null, l ? h("a", { class: "btn sm", href: l, target: "_blank", rel: "noopener", text: "Watch on YouTube" }) : null)); };
+$("#episodes").replaceChildren(...AURALIS.episodes.map(epCard));
+$("#bts").replaceChildren(...AURALIS.bts.map(epCard));
+const NEWS = (REMOTE && REMOTE.auralis && REMOTE.auralis.news) || [];
+if (NEWS.length) { $("#newsWrap").hidden = false; $("#news").replaceChildren(...NEWS.map(n => h("article", { class: "card" }, h("div", { class: "info" }, n.date ? h("span", { class: "tag", text: n.date }) : null, h("h3", { text: n.title }), h("p", { text: n.body }))))); }
+const ad = safeUrl(CONFIG.auralisDiscord) || discordHref();
+if (ad) { $("#discordInvite").href = ad; $("#discordInvite").target = "_blank"; $("#discordInvite").rel = "noopener"; } else $("#discordInvite").textContent = "Discord invite: add in CONFIG";
+
+/* Contact */
+const dh = discordHref();
+if (dh) { $("#discordBtn").href = dh; $("#discordBtn").target = "_blank"; $("#discordBtn").rel = "noopener"; }
+else { $("#discordBtn").textContent = "Add your Discord invite in CONFIG"; $("#discordBtn").setAttribute("aria-disabled", "true"); }
+
+$("#form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const f = e.target, msg = $("#fmsg"), d = new FormData(f), btn = f.querySelector("button[type=submit]");
+  msg.style.color = "#f0c36d";
+  if (d.get("_gotcha")) return;
+  for (const n of ["name", "contact", "service", "details"]) if (!String(d.get(n) || "").trim()) { msg.textContent = "Please fill in all required fields."; f.elements[n].focus(); return; }
+  if (!CONFIG.FORM_ENDPOINT) { msg.textContent = "This form is not connected yet, so nothing was sent. Use the Discord button for now."; return; }
+  try {
+    msg.textContent = "Sending..."; btn.disabled = true;
+    const r = await fetch(CONFIG.FORM_ENDPOINT, { method: "POST", body: d, headers: { Accept: "application/json" } });
+    if (!r.ok) throw new Error(r.status);
+    msg.style.color = "#7ee2a8"; msg.textContent = "Sent. Thanks, I'll reply soon."; f.reset();
+  } catch { msg.style.color = "#ff8a8a"; msg.textContent = "Sending failed. Please try again or use Discord."; } finally { btn.disabled = false; }
+});
+
+/* Nav, glow follow, year */
+const menu = $("#menu"), links = $("#links");
+menu.onclick = () => { const o = links.classList.toggle("open"); menu.setAttribute("aria-expanded", o); };
+links.addEventListener("click", () => { links.classList.remove("open"); menu.setAttribute("aria-expanded", "false"); });
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  $("#home").addEventListener("pointermove", e => { const r = e.currentTarget.getBoundingClientRect(); const bg = $("#home .bg"); bg.style.setProperty("--mx", (e.clientX - r.left) + "px"); bg.style.setProperty("--my", (e.clientY - r.top) + "px"); });
+}
+$("#yr").textContent = new Date().getFullYear();
+
+/* =====================================================================
+   UPGRADE: animated statistics. Real numbers are read automatically from
+   SOCIALS (followers, views, YouTube videos) and PROJECTS. Until you add
+   real values, SAMPLE numbers are shown and tagged "Sample data".
+   ===================================================================== */
+const SAMPLE = { views: 100000, followers: 10000, projects: 12, videos: 40 };   // demo values only
+/* GROWTH: replace values with your real monthly views, e.g. values: [1200, 1800, 2500]; labels must match. null = sample curve */
+const GROWTH = { labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"], values: null, sample: [3000, 5200, 8100, 12500, 19000, 27500] };
+/* GOALS: set current and target to real numbers. null = sample */
+const GOALS = [
+  { label: "Subscriber goal", current: null, target: null, sample: [6200, 10000] },
+  { label: "Monthly views goal", current: null, target: null, sample: [48000, 100000] },
+  { label: "Projects goal", current: null, target: null, sample: [9, 20] }
+];
+if (REMOTE && REMOTE.growth && REMOTE.growth.values && REMOTE.growth.values.length) { GROWTH.labels = REMOTE.growth.labels; GROWTH.values = REMOTE.growth.values; }
+if (REMOTE && Array.isArray(REMOTE.goals)) { const gl = REMOTE.goals.filter(g => g.current != null && g.target > 0); if (gl.length) GOALS.splice(0, GOALS.length, ...gl.map(g => ({ label: g.label, current: g.current, target: g.target, sample: [0, 1] }))); }
+const num = v => { if (typeof v === "number") return v; const m = String(v || "").trim().replace(/,/g, "").match(/^([\d.]+)\s*([kKmM])?$/); return m ? parseFloat(m[1]) * ({ k: 1e3, m: 1e6 }[(m[2] || "").toLowerCase()] || 1) : 0; };
+const fmt = n => Math.round(n).toLocaleString("en-GB");
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const sumOf = k => SOCIALS.reduce((a, s) => a + num(s[k]), 0);
+let seen = false;
+function renderStats() {
+  const yt = SOCIALS.find(s => s.platform === "YouTube") || {};
+  const rows = [["Total views", sumOf("views"), SAMPLE.views], ["Total followers", sumOf("followers"), SAMPLE.followers],
+    ["Projects shown", PROJECTS.filter(p => p.youtubeId || p.url).length, SAMPLE.projects], ["YouTube videos", num(yt.videos), SAMPLE.videos]];
+  $("#kpis").replaceChildren(...rows.map(([l, v, smp]) => {
+    const real = v > 0, val = real ? v : smp;
+    return h("div", { class: "kpi" }, h("div", { class: "n", "data-v": val, text: seen ? fmt(val) : "0" }), h("div", { text: l }), h("span", { class: real ? "tag ok" : "tag ph", text: real ? "Your data" : "Sample data" }));
+  }));
+  /* line chart */
+  const real = !!GROWTH.values, v = GROWTH.values || GROWTH.sample, W = 600, H = 220, p = 34, mx = Math.max(...v, 1) * 1.1;
+  const X = i => p + i * (W - 2 * p) / (v.length - 1 || 1), Y = n => H - p - n / mx * (H - 2 * p);
+  const d = v.map((n, i) => (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(n).toFixed(1)).join("");
+  let g = `<defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b5cf6" stop-opacity=".35"/><stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/></linearGradient><linearGradient id="gl" x1="0" x2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#4f7cff"/></linearGradient></defs>`;
+  for (let k = 0; k < 4; k++) { const y = p + k * (H - 2 * p) / 3; g += `<line x1="${p}" x2="${W - p}" y1="${y}" y2="${y}" stroke="#2a2a36"/>`; }
+  g += `<path class="area" d="${d}L${X(v.length - 1)} ${H - p}L${X(0)} ${H - p}Z" fill="url(#ga)"/><path class="line" pathLength="1" d="${d}" fill="none" stroke="url(#gl)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
+  v.forEach((n, i) => { const lab = esc(GROWTH.labels[i] || ""); g += `<circle class="dot" cx="${X(i)}" cy="${Y(n)}" r="4.5" style="--d:${i * 200 + 500}ms"><title>${lab}: ${fmt(n)} views</title></circle><text x="${X(i)}" y="${H - 10}" fill="#a8a8b8" font-size="12" text-anchor="middle">${lab}</text>`; });
+  $("#chart").innerHTML = g;
+  $("#chartTag").className = real ? "tag" : "tag ph"; $("#chartTag").textContent = real ? "Entered by hand" : "Sample data, not real results";
+  /* goal bars */
+  const allReal = GOALS.every(x => x.current != null && x.target);
+  $("#goals").replaceChildren(h("div", { class: "ph-row" }, h("h3", { text: "Goals" }), h("span", { class: allReal ? "tag ok" : "tag ph", text: allReal ? "Your data" : "Sample data" })),
+    ...GOALS.map(x => {
+      const r = x.current != null && x.target, [c, t] = r ? [x.current, x.target] : x.sample, pct = Math.min(100, c / t * 100);
+      const bar = h("div", { class: "bar", role: "progressbar", "aria-valuenow": Math.round(pct), "aria-valuemin": 0, "aria-valuemax": 100, "aria-label": x.label }, h("i"));
+      bar.firstChild.style.setProperty("--w", pct + "%");
+      return h("div", { class: "goal" }, h("div", { class: "ph-row" }, h("span", { text: x.label }), h("span", { text: fmt(c) + " / " + fmt(t) + (r ? "" : " (sample)") })), bar);
+    }));
+}
+function count(el) {
+  const to = +el.dataset.v; if (RM) { el.textContent = fmt(to); return; }
+  const t0 = performance.now();
+  (function f(t) { const k = Math.min(1, (t - t0) / 1600); el.textContent = fmt(to * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(f); })(t0);
+}
+renderStats();
+const sio = new IntersectionObserver(([e]) => {   /* runs once: counters never reset on later scrolls */
+  if (!e.isIntersecting) return;
+  seen = true; $("#statsblock").classList.add("go"); document.querySelectorAll("#kpis .n").forEach(count); sio.disconnect();
+}, { threshold: .25 });
+sio.observe($("#statsblock"));
+
+/* =====================================================================
+   UPGRADE: scroll reveals, hero text, particles, parallax, tilt, magnetic
+   ===================================================================== */
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .12, rootMargin: "0px 0px -6% 0px" });
+function rv(sel, an, step) {
+  document.querySelectorAll(sel).forEach(e => {
+    const i = Math.min([...e.parentElement.children].indexOf(e), 8);
+    e.classList.add("rv", an); e.style.setProperty("--d", i * step + "ms"); io.observe(e);
+  });
+}
+rv("section:not(#auralis):not(#home) h2", "clip", 0);
+rv(".lead,.note,.filters,.sub", "up", 0);
+rv("#projects .card,#social-grid .card,#episodes .card,#bts .card,.kpi", "up", 90);
+rv("#service-grid .card", "zm", 110); rv("#thumbs .thumb", "rot", 70);
+rv("#auralis .two>.panel:first-child", "lf", 0); rv("#auralis .two>.panel:last-child", "rt", 120);
+rv(".contact>.panel", "lf", 0); rv("#form", "rt", 100); rv("#statsblock .two>.panel", "zm", 120);
+
+function split(el) {
+  const t = el.textContent; el.setAttribute("aria-label", t); el.textContent = "";
+  [...t].forEach((c, i) => { const s = h("span", { class: "ch", "aria-hidden": "true" }); s.textContent = c === " " ? "\u00a0" : c; s.style.setProperty("--i", i); el.append(s); });
+  el.classList.add("split");
+}
+split($(".wordmark")); requestAnimationFrame(() => $(".wordmark").classList.add("in"));
+split($("#auralis h2")); io.observe($("#auralis h2"));
+
+function particles(host, o) {
+  if (RM) return;
+  const c = h("canvas", { class: "pc", "aria-hidden": "true" }); host.prepend(c);
+  const x = c.getContext("2d"), d = Math.min(devicePixelRatio || 1, 1.5), N = innerWidth < 700 ? Math.round(o.n / 2) : o.n;
+  let W, H, run = false; const P = [];
+  const size = () => { W = c.width = host.clientWidth * d; H = c.height = host.clientHeight * d; }; size(); addEventListener("resize", size);
+  for (let i = 0; i < N; i++) P.push({ x: Math.random(), y: Math.random(), r: (Math.random() * 1.6 + .5) * d, s: (Math.random() * .6 + .3) * o.speed / 1000, p: Math.random() * 6.28, a: Math.random() * .5 + .2 });
+  function f(t) {
+    if (!run) return; x.clearRect(0, 0, W, H);
+    for (const q of P) { q.y -= q.s * 16; if (q.y < -.02) q.y = 1.02; x.fillStyle = `rgba(${o.color},${q.a * (.6 + .4 * Math.sin(t / 900 + q.p))})`; x.beginPath(); x.arc((q.x + Math.sin(t / 3000 + q.p) * .015) * W, q.y * H, q.r, 0, 6.283); x.fill(); }
+    requestAnimationFrame(f);
+  }
+  new IntersectionObserver(([e]) => { if (e.isIntersecting && !run) { run = true; requestAnimationFrame(f); } else if (!e.isIntersecting) run = false; }).observe(host);
+}
+particles($("#home .bg"), { n: 46, color: "150,130,255", speed: .15 });
+const layers = h("div", { class: "alayers", "aria-hidden": "true" }, h("div", { class: "fog f1", "data-par": ".12" }), h("div", { class: "fog f2", "data-par": "-.18" }));
+$("#auralis").prepend(layers); particles(layers, { n: 36, color: "170,150,255", speed: .1 });
+$(".o1").dataset.par = ".15"; $(".o2").dataset.par = "-.1";
+
+const SECS = [...document.querySelectorAll("main section[id]")], NAVA = [...document.querySelectorAll("nav ul a")], PAR = [...document.querySelectorAll("[data-par]")];
+let tick = false;
+function onScroll() {
+  if (tick) return; tick = true;
+  requestAnimationFrame(() => {
+    tick = false;
+    const y = scrollY, max = document.documentElement.scrollHeight - innerHeight;
+    $("#prog").style.transform = `scaleX(${max > 0 ? y / max : 0})`;
+    $("header").classList.toggle("sc", y > 30);
+    $(".scrollind").style.opacity = y > 80 ? 0 : 1;
+    let cur = ""; SECS.forEach(s => { if (s.getBoundingClientRect().top <= 140) cur = s.id; });
+    NAVA.forEach(a => a.classList.toggle("act", a.getAttribute("href") === "#" + cur));
+    if (!RM) PAR.forEach(el => { const r = el.closest("section").getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return; el.style.translate = "0 " + ((innerHeight / 2 - (r.top + r.height / 2)) * el.dataset.par) + "px"; });
+  });
+}
+addEventListener("scroll", onScroll, { passive: true }); addEventListener("resize", onScroll); onScroll();
+
+/* Tilt + card spotlight + magnetic buttons: mouse devices only */
+if (matchMedia("(hover:hover) and (pointer:fine)").matches && !RM) {
+  let cur = null, mb = null;
+  const off = () => { if (cur) { cur.classList.remove("tilting"); cur.style.transform = ""; cur = null; } if (mb) { mb.style.setProperty("--tx", "0px"); mb.style.setProperty("--ty", "0px"); mb = null; } };
+  document.addEventListener("pointermove", e => {
+    const c = e.target.closest(".card"), b = e.target.closest(".btn.pri");
+    if (c !== cur && cur) { cur.classList.remove("tilting"); cur.style.transform = ""; cur = null; }
+    if (b !== mb && mb) { mb.style.setProperty("--tx", "0px"); mb.style.setProperty("--ty", "0px"); mb = null; }
+    if (c && !c.querySelector("iframe")) {
+      const r = c.getBoundingClientRect(), px = (e.clientX - r.left) / r.width - .5, py = (e.clientY - r.top) / r.height - .5;
+      c.classList.add("tilting"); c.style.transform = `perspective(800px) rotateX(${-py * 6}deg) rotateY(${px * 6}deg) translateY(-4px)`;
+      c.style.setProperty("--gx", (px + .5) * 100 + "%"); c.style.setProperty("--gy", (py + .5) * 100 + "%"); cur = c;
+    }
+    if (b) { const r = b.getBoundingClientRect(); b.style.setProperty("--tx", (e.clientX - r.left - r.width / 2) * .18 + "px"); b.style.setProperty("--ty", (e.clientY - r.top - r.height / 2) * .28 + "px"); mb = b; }
+  }, { passive: true });
+  document.addEventListener("pointerout", e => { if (!e.relatedTarget || e.relatedTarget.tagName === "IFRAME") off(); });
+}
+
+/* Auralis buttons */
+$("#watchTrailer").onclick = () => {
+  const t = $("#trailer"); t.scrollIntoView({ behavior: RM ? "auto" : "smooth", block: "center" });
+  const p = t.querySelector(".play"); if (p) setTimeout(() => p.click(), RM ? 0 : 700);
+};
+$("#applyBtn").onclick = () => {
+  const u = safeUrl(CONFIG.recruitUrl);
+  if (u) { window.open(u, "_blank", "noopener"); return; }
+  $("#serviceSel").value = "Auralis SMP / other"; $("#contact").scrollIntoView({ behavior: RM ? "auto" : "smooth" });
+};
+/* =====================================================================
+   THE JOURNEY: cards + stickman animation (one canvas, plays once when seen,
+   pauses off-screen, shows the final frame if reduced motion is on)
+   ===================================================================== */
+(function () {
+  $("#jlead").textContent = JOURNEY_COPY.lead;
+  $("#jlist").replaceChildren(...JOURNEY.map(j => h("article", { class: "card jitem" + (j.highlight ? " hl" : "") }, h("div", { class: "info" },
+    h("div", { class: "row" }, h("h3", { text: j.name }), h("span", { class: "tag" + (j.highlight ? " ok" : ""), text: j.outcome })),
+    h("p", { text: j.text }), j.link ? h("a", { class: "btn sm", href: j.link, text: j.linkText || "Open" }) : null))));
+  $("#jclose").replaceChildren(...JOURNEY_COPY.closing.map(t => h("p", { text: t })));
+  rv(".jitem", "up", 90); rv("#jclose", "up", 0); rv(".stage", "zm", 0);
+
+  const cv = $("#jc"), cx = cv.getContext("2d"), M = Math, D = M.PI / 180;
+  const GY = 330, WW = 800, WH = 360, SX = 250, SW = 38, SH = 34, PX = SX + 4 * SW, PH = 268, BX = 585;
+  /* poses: torso lean, arm1 upper/lower, arm2 upper/lower, leg1 upper/lower, leg2 upper/lower (degrees from straight down, forward = +) */
+  const PO = { stand: [0, 8, 12, -6, 4, 4, 0, -4, 0], look: [-5, 8, 12, -6, 4, 4, 0, -4, 0], crouch: [28, 40, 60, 20, 40, 62, -8, 52, -14], hop: [-4, 50, 70, 10, 40, 30, 40, 5, 20],
+    air: [-6, 160, 172, 140, 165, 40, 70, 10, 40], fall: [60, 120, 60, 150, 100, 100, 120, 130, 160], lie: [90, 110, 90, 100, 80, -85, -85, -90, -90],
+    push: [50, 20, 10, 10, 5, 70, -30, 80, -60], grit: [-3, 40, 130, -10, 0, 6, 0, -4, 0], hang: [0, 178, 178, 170, 175, 6, 2, -4, 0],
+    pull: [30, 100, 60, 80, 40, 50, -20, 20, -30], cheer: [-8, 165, 175, 150, 170, 12, 0, -10, 0] };
+  /* timeline: attempts 0-3 fail, the last one succeeds. Each failure adds a step, so the failures become the way up. */
+  const TL = [], BT = [0, 0, 0, 0, 0], IMP = [], FAIL = [], CAP = [[0, "The goal."]];
+  let T = 0, st = { x: 70, g: 0, p: PO.look }, WIN = 1e9;
+  const go = (d, x, g, p, o = {}) => { TL.push({ t0: T, d, x0: st.x, x1: x, g0: st.g, g1: g, p0: st.p, p1: p, arc: o.arc || 0, w: o.w || 0, e: o.e || 0 }); T += d; st = { x, g, p }; };
+  const hold = (d, p) => go(d, st.x, st.g, p), cxs = i => SX + (i - .5) * SW;
+  hold(1.4, PO.look);
+  for (let s = 0; s < 5; s++) {
+    CAP.push([T, s < 4 ? "Attempt " + (s + 1) : "Again."]);
+    if (s) { BT[s] = T; IMP.push([T + .4, cxs(s), 0]); hold(.45, PO.grit); go(.3, cxs(s), s * SH, PO.hop, { arc: 10 }); } else go(1, 225, 0, PO.stand, { w: 1 });
+    hold(.3, PO.crouch);
+    if (s < 4) {
+      go(.7, st.x + 10, st.g, PO.air, { arc: 40, e: 1 }); go(.3, st.x, st.g, PO.fall); IMP.push([T, st.x, st.g]);
+      go(.12, st.x, st.g, PO.lie); FAIL.push(T); hold(.6, PO.lie); go(.45, st.x, st.g, PO.push); go(.35, st.x, st.g, PO.crouch); go(.35, st.x, st.g, PO.grit);
+    } else {
+      go(.7, PX - 8, 155, PO.air, { arc: 30, e: 1 }); go(.15, PX - 8, 155, PO.hang); go(.8, PX + 16, PH, PO.pull); go(.3, PX + 22, PH, PO.stand);
+      go(1.3, BX - 30, PH, PO.stand, { w: 1 }); WIN = T; CAP.push([T, "Got there."]); go(.5, BX - 30, PH, PO.cheer); hold(2.4, PO.cheer);
+    }
+  }
+  const END = T;
+  let si = 0;
+  function at(t) {
+    if (t < TL[si].t0) si = 0; while (si < TL.length - 1 && t >= TL[si].t0 + TL[si].d) si++;
+    const s = TL[si], u = M.min(1, M.max(0, (t - s.t0) / s.d)), us = u * u * (3 - 2 * u), e = s.w || s.e === 1 ? u : us, L = (a, b, k) => a + (b - a) * k;
+    let p = s.p0.map((v, i) => L(v, s.p1[i], us));
+    if (s.w) { const ph = M.abs(s.x1 - s.x0) * u * .2, w = M.sin(ph), c = M.cos(ph); p = [6, -w * 28, -w * 28 + 22, w * 28, w * 28 + 22, w * 32, w * 32 - 28 * M.max(0, c), -w * 32, -w * 32 - 28 * M.max(0, -c)]; }
+    return { x: L(s.x0, s.x1, e), g: L(s.g0, s.g1, e), l: 4 * s.arc * u * (1 - u), p };
+  }
+  function man(o) {
+    const [ln, a1, a2, b1, b2, c1, c2, d1, d2] = o.p, hh = M.max(9, 26 * M.cos(c1 * D) + 26 * M.cos(c2 * D), 26 * M.cos(d1 * D) + 26 * M.cos(d2 * D));
+    const hx = o.x, hy = GY - o.g - o.l - hh, dx = M.sin(ln * D), dy = -M.cos(ln * D), shx = hx + 25 * dx, shy = hy + 25 * dy;
+    const limb = (x, y, u, l, A, B) => { const kx = x + A * M.sin(u * D), ky = y + A * M.cos(u * D); cx.moveTo(x, y); cx.lineTo(kx, ky); cx.lineTo(kx + B * M.sin(l * D), ky + B * M.cos(l * D)); };
+    cx.fillStyle = "rgba(0,0,0,.55)"; cx.beginPath(); cx.ellipse(hx, GY - o.g + 1, 20 - o.l * .15, 3.5, 0, 0, 7); cx.fill();
+    cx.lineCap = cx.lineJoin = "round"; cx.lineWidth = 4.2; cx.shadowColor = "rgba(110,120,255,.9)"; cx.shadowBlur = 12;
+    cx.strokeStyle = "rgba(244,244,248,.5)"; cx.beginPath(); limb(shx, shy, b1, b2, 18, 18); limb(hx, hy, d1, d2, 26, 26); cx.stroke();
+    cx.strokeStyle = "#f4f4f8"; cx.beginPath(); cx.moveTo(hx, hy); cx.lineTo(hx + 29 * dx, hy + 29 * dy); limb(shx, shy, a1, a2, 18, 18); limb(hx, hy, c1, c2, 26, 26); cx.stroke();
+    cx.beginPath(); cx.arc(hx + 39 * dx, hy + 39 * dy, 8.5, 0, 7); cx.fillStyle = "#0a0a10"; cx.fill(); cx.stroke(); cx.shadowBlur = 0;
+  }
+  const dots = []; for (let i = 0; i < 5; i++) { const d = h("span", { class: "jd" }); dots.push(d); $("#jdots").append(d); }
+  const ds = [], cap = $("#jcap"); let lc = -1, vw = WW, sc = 1, dpr = 1, cam = 0;
+  function fit() { const w = cv.clientWidth || 600; vw = w < 560 ? 460 : WW; dpr = M.min(devicePixelRatio || 1, 2); cv.width = w * dpr; cv.height = w * dpr * WH / vw; cv.style.height = (w * WH / vw) + "px"; sc = w * dpr / vw; }
+  function render(t, dt) {
+    const o = at(t), tg = M.max(0, M.min(WW - vw, o.x - vw * .45)); cam = dt ? cam + (tg - cam) * M.min(1, dt * 3) : tg;
+    let sh = 0; for (const i of IMP) { const u = (t - i[0]) / .35; if (u > 0 && u < 1) sh += 3.5 * (1 - u) * (1 - u) * M.sin(t * 90); }
+    cx.setTransform(sc, 0, 0, sc, (-cam + sh) * sc, sh * .6 * sc);
+    let g = cx.createLinearGradient(0, 0, 0, WH); g.addColorStop(0, "#0d0b16"); g.addColorStop(1, "#07070b"); cx.fillStyle = g; cx.fillRect(cam - 20, -20, vw + 40, WH + 40);
+    for (let i = 0; i < 22; i++) { cx.fillStyle = "rgba(170,150,255," + (.16 + .12 * M.sin(t + i)) + ")"; cx.beginPath(); cx.arc((i * 173 + t * (6 + i % 5 * 3)) % WW, (i * 89) % 250 + M.sin(t * .6 + i) * 6, .8 + i % 3 * .5, 0, 7); cx.fill(); }
+    const bx = BX, by = GY - PH - 28, w = t - WIN; let fl = 1; for (const f of FAIL) { const u = (t - f) / .6; if (u > 0 && u < 1) fl = M.min(fl, .35 + .65 * u); }
+    const k = w > 0 ? 1.6 : fl * (.85 + .15 * M.sin(t * 3));
+    g = cx.createRadialGradient(bx, by, 0, bx, by, 90 * k); g.addColorStop(0, "rgba(170,140,255," + .6 * M.min(1, k) + ")"); g.addColorStop(1, "rgba(79,124,255,0)"); cx.fillStyle = g; cx.fillRect(bx - 160, by - 160, 320, 320);
+    if (w > 0) { const u = M.min(1, w / 2.2); cx.strokeStyle = "rgba(200,185,255," + .4 * (1 - u * .5) + ")"; cx.lineWidth = 2; cx.beginPath(); for (let i = 0; i < 16; i++) { const a = i / 16 * 6.283 + t * .2; cx.moveTo(bx + M.cos(a) * 16, by + M.sin(a) * 16); cx.lineTo(bx + M.cos(a) * (50 + 190 * u), by + M.sin(a) * (50 + 190 * u)); } cx.stroke();
+      g = cx.createRadialGradient(bx, by, 0, bx, by, 900); g.addColorStop(0, "rgba(139,92,246," + .22 * M.min(1, w) + ")"); g.addColorStop(1, "rgba(139,92,246,0)"); cx.fillStyle = g; cx.fillRect(cam - 20, -20, vw + 40, WH + 40); }
+    cx.shadowColor = "#a99cff"; cx.shadowBlur = 24; cx.fillStyle = "#fff"; cx.beginPath(); cx.arc(bx, by, 7, 0, 7); cx.fill(); cx.shadowBlur = 0;
+    if (w < 0) { cx.strokeStyle = "rgba(200,190,255," + (t < 1.4 ? M.min(.5, t * .55) : .13) + ")"; cx.lineWidth = 1.5; cx.setLineDash([4, 7]); cx.lineDashOffset = -t * 12; cx.beginPath(); cx.moveTo(o.x, GY - o.g - o.l - 92); cx.quadraticCurveTo((o.x + bx) / 2, by - 20, bx, by); cx.stroke(); cx.setLineDash([]); }
+    cx.fillStyle = "#101017"; cx.fillRect(cam - 20, GY, vw + 40, WH - GY + 20); cx.fillStyle = "#14141d"; cx.fillRect(PX, GY - PH, WW - PX + 20, PH);
+    cx.strokeStyle = "rgba(139,92,246,.45)"; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(cam - 20, GY); cx.lineTo(cam + vw + 20, GY); cx.moveTo(PX, GY); cx.lineTo(PX, GY - PH); cx.lineTo(WW + 20, GY - PH); cx.stroke();
+    for (let i = 1; i < 5; i++) { const u = (t - BT[i]) / .4; if (t < BT[i]) continue; const dy = u < 1 ? -(1 - u) * (1 - u) * 220 : 0, x = SX + (i - 1) * SW;
+      cx.fillStyle = "#171722"; cx.fillRect(x, GY - i * SH + dy, SW, i * SH); cx.strokeStyle = "rgba(139,92,246,.4)"; cx.lineWidth = 1.5; cx.strokeRect(x, GY - i * SH + dy, SW, i * SH); cx.strokeStyle = "rgba(190,170,255,.7)"; cx.beginPath(); cx.moveTo(x, GY - i * SH + dy); cx.lineTo(x + SW, GY - i * SH + dy); cx.stroke(); }
+    for (const i of IMP) { const u = (t - i[0]) / .8; if (u < 0 || u > 1) continue; for (let n = 0; n < 10; n++) { const a = -3.14 * n / 9, r = (8 + 24 * u) * (.6 + (n * 37 % 10) / 25); cx.fillStyle = "rgba(200,192,255," + .5 * (1 - u) + ")"; cx.beginPath(); cx.arc(i[1] + M.cos(a) * r * 1.4, GY - i[2] + M.sin(a) * r * .7, 2.2 * (1 - u) + .5, 0, 7); cx.fill(); } }
+    man(o);
+    cx.setTransform(1, 0, 0, 1, 0, 0); g = cx.createRadialGradient(cv.width / 2, cv.height / 2, cv.height * .35, cv.width / 2, cv.height / 2, cv.height * .95); g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,.6)"); cx.fillStyle = g; cx.fillRect(0, 0, cv.width, cv.height);
+    let ci = 0; for (let n = 0; n < CAP.length; n++) if (CAP[n][0] <= t) ci = n; if (ci !== lc) { lc = ci; cap.textContent = CAP[ci][1]; }
+    dots.forEach((d, i) => { const c = "jd" + (i < 4 ? (t >= FAIL[i] ? " f" : "") : (t >= WIN ? " w" : "")); if (ds[i] !== c) { ds[i] = c; d.className = c; } });
+  }
+  let run = false, tm = 0, last = 0, started = false, ended = false; const rb = $("#jreplay");
+  function frame(now) { if (!run) return; const dt = M.min(.05, (now - last) / 1000); last = now; tm += dt; render(M.min(tm, END), dt); if (tm >= END) { run = false; ended = true; rb.hidden = false; return; } requestAnimationFrame(frame); }
+  function resume() { if (run) return; run = true; last = performance.now(); requestAnimationFrame(frame); }
+  function play() { tm = 0; ended = false; rb.hidden = true; lc = -1; resume(); }
+  rb.onclick = play; fit();
+  let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { fit(); if (!run) render(M.min(tm, END), 0); }, 120); });
+  if (RM) { render(END, 0); rb.textContent = "Play animation"; rb.hidden = false; }
+  else { render(0, 0); new IntersectionObserver(([e]) => { if (e.isIntersecting) { if (!started) { started = true; play(); } else if (!ended) resume(); } else run = false; }, { threshold: .4 }).observe(cv); }
+})();
+})();
+</script>
+</body>
+</html>
